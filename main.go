@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"log/slog"
 	"net/http"
 	"os"
@@ -8,6 +9,7 @@ import (
 	"shortener/internal/http-server/handlers/url/delete"
 	"shortener/internal/http-server/handlers/url/save"
 	"shortener/internal/lib/logger/handlers/slogpretty"
+	"shortener/internal/storage/postgres"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -15,7 +17,6 @@ import (
 	"shortener/internal/config"
 	mwLogger "shortener/internal/http-server/middleware/logger"
 	"shortener/internal/lib/logger/sl"
-	"shortener/internal/storage/sqlite"
 )
 
 const (
@@ -32,11 +33,14 @@ func main() {
 	log.Info("starting server", slog.String("env", cfg.Env))
 	log.Debug("debug logging enabled")
 
-	storage, err := sqlite.New(cfg.StoragePath)
-	if err != nil {
-		log.Error("failed to init storage", sl.Err(err))
-		os.Exit(1)
-	}
+	//storage, err := sqlite.New(cfg.StoragePath)
+	//if err != nil {
+	//	log.Error("failed to init storage", sl.Err(err))
+	//	os.Exit(1)
+	//}
+
+	db, _ := sql.Open("pgx", cfg.PostgresConfig.DSN)
+	storage := postgres.New(db)
 
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)

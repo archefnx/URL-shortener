@@ -9,9 +9,13 @@ import (
 )
 
 type Config struct {
-	Env         string `yaml:"env" end-default:"local" env-required:"true"`
-	StoragePath string `yaml:"storage_path" env-required:"true"`
-	HTTPServer  `yaml:"http_server"`
+	Env string `yaml:"env" end-default:"local" env-required:"true"`
+	//StoragePath    string `yaml:"storage_path" env-required:"true"`
+	HTTPServer     `yaml:"http_server"`
+	PostgresConfig `yaml:"postgres"`
+}
+type PostgresConfig struct {
+	DSN string `yaml:"dsn"`
 }
 
 type HTTPServer struct {
